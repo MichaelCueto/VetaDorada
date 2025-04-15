@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Producción de Oro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="top-container">
+
+      <!-- 📂 Importación de Archivos o BD -->
+      <div class="form-box">
+        <h3>Importar Datos</h3>
+
+        <label for="fuente">Fuente de Datos:</label>
+        <select id="fuente" onchange="cambiarFuente()">
+          <option value="excel">Excel</option>
+          <option value="db">Base de Datos</option>
+        </select>
+
+        <div id="inputs-excel">
+          <div class="file-upload">
+            <label for="import-mineral">Mineral:</label>
+            <input type="file" id="import-mineral" accept=".xls,.xlsx" />
+          </div>
+          <div class="file-upload">
+            <label for="import-recuperacion">Recuperación:</label>
+            <input type="file" id="import-recuperacion" accept=".xls,.xlsx" />
+          </div>
+          <div class="file-upload">
+            <label for="import-blendings">Blendings:</label>
+            <input type="file" id="import-blendings" accept=".xls,.xlsx" />
+          </div>
+          <div class="file-upload">
+            <label for="import-fecha_blending">Fecha Blendings:</label>
+            <input type="file" id="import-fecha_blending" accept=".xls,.xlsx" />
+          </div>
+          <div class="file-upload">
+            <label for="import-cosechas">Cosechas:</label>
+            <input type="file" id="import-cosechas" accept=".xls,.xlsx" />
+          </div>
+          <button onclick="importarExcel()">Importar</button>
+        </div>
+
+        <div id="db-connection" style="display: none;">
+          <p>Conexión directa con la base de datos MySQL.</p>
+          <button onclick="conectarBD()">Conectar a Base de Datos</button>
+        </div>
+      </div>
+
+      <!-- ⚙️ Configuración -->
+      <div class="form-box">
+        <h3>Configuración</h3>
+        <label for="all">Ejecutar para todos:</label>
+        <select id="all" onchange="toggleParametros()">
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+
+        <div id="parametros" style="display: none; margin-top: 1em;">
+          <label for="id_campana">ID Campaña:</label>
+          <input type="text" id="id_campana" /><br />
+          <label for="fecha_cosecha_anterior">Fecha Cosecha Anterior:</label>
+          <input type="date" id="fecha_cosecha_anterior" /><br />
+          <label for="fecha_cosecha_actual">Fecha Cosecha Actual:</label>
+          <input type="date" id="fecha_cosecha_actual" /><br />
+          <label for="tanque_cosechado">Tanque Cosechado:</label>
+          <input type="text" id="tanque_cosechado" /><br />
+          <label for="cm_au_real">CM_AU Real:</label>
+          <input type="number" id="cm_au_real" step="0.01" /><br />
+        </div>
+
+        <button id="btn-calcular" onclick="obtenerTrazabilidad()">Calcular Trazabilidad</button>
+        <button id="btn-rastrear" style="display:none;" onclick="calcularRastreo()">Calcular Rastreo</button>
+      </div>
+
+      <!-- ⚙️ Parámetros Técnicos -->
+      <div class="form-box">
+        <h3>Parámetros Técnicos</h3>
+
+        <label for="densidad_pulpa">Densidad de Pulpa:</label>
+        <input type="number" id="densidad_pulpa" value="1290" disabled />
+
+        <label for="ge">Gravedad Específica (GE):</label>
+        <input type="number" id="ge" value="2.7" step="0.01" disabled />
+
+        <label for="tonelaje">Tonelaje (TPD):</label>
+        <input type="number" id="tonelaje" value="550" disabled />
+
+        <button onclick="habilitarParametros()">Editar Parámetros</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🪟 Modal de Resultados -->
+  <div id="modal-trazabilidad" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2>Trazabilidad Final</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Productor</th>
+            <th>Au CM Kg Estimado</th>
+            <th>Porcentaje de Participación (%)</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-trazabilidad"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de conexión -->
+  <div id="modal-conexion" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalConexion()">&times;</span>
+      <h3>Configuración de la Base de Datos</h3>
+      <label for="db-user">Usuario:</label>
+      <input type="text" id="db-user"><br>
+      <label for="db-pass">Contraseña:</label>
+      <input type="password" id="db-pass"><br>
+      <label for="db-host">Host:</label>
+      <input type="text" id="db-host" value="localhost"><br>
+      <label for="db-name">Base de Datos:</label>
+      <input type="text" id="db-name"><br>
+      <button onclick="confirmarConexion()">Confirmar</button>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

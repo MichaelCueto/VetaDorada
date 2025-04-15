@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Trazabilidad</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Top 5 de CM_AU</h2>
+    <canvas id="trazabilidadChart"></canvas>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const data = JSON.parse(localStorage.getItem("trazabilidadData")) || [];
+            
+            data.sort((a, b) => b.cm_au - a.cm_au);
+            const top5 = data.slice(0, 5);
+            
+            const labels = top5.map(item => item.id_blending);
+            const values = top5.map(item => item.cm_au);
+            
+            const ctx = document.getElementById("trazabilidadChart").getContext("2d");
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "CM_AU",
+                        data: values,
+                        backgroundColor: "#007bff"
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>
