@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ns1="http://service.sunat.gob.pe"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    targetNamespace="http://service.sunat.gob.pe">
+
+  <wsdl:import namespace="http://service.sunat.gob.pe" location="billService_ns1.wsdl"/>
+</wsdl:definitions>

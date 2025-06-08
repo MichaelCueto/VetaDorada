@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ns1="http://service.sunat.gob.pe"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    targetNamespace="http://service.sunat.gob.pe">
+
+  <wsdl:types>
+    <xs:schema targetNamespace="http://service.sunat.gob.pe"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               elementFormDefault="qualified">
+      <xs:import namespace="http://service.sunat.gob.pe" schemaLocation="billService_types.xsd"/>
+    </xs:schema>
+  </wsdl:types>
+
+  <wsdl:message name="sendBill">
+    <wsdl:part name="parameters" element="ns1:sendBill"/>
+  </wsdl:message>
+
+  <wsdl:message name="sendBillResponse">
+    <wsdl:part name="parameters" element="ns1:sendBillResponse"/>
+  </wsdl:message>
+
+  <wsdl:portType name="billService">
+    <wsdl:operation name="sendBill">
+      <wsdl:input message="ns1:sendBill"/>
+      <wsdl:output message="ns1:sendBillResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

@@ -7,7 +7,10 @@ from trazabilidad import Trazabilidad
 from datetime import datetime
 from data import cargar_data_mysql, integracion_data  # agrega cargar_data_mysql
 import warnings
+from consulta_ruc import procesar_df_rucs
+from consulta_recpo import descargar_pdf, correccion_pdf
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 class TrazabilidadSimulador:
     def __init__(self, paths=None, db_uri=None, densidad=None, ge=None, tonelaje=None, a=0.20, betas=None,
@@ -37,10 +40,10 @@ class TrazabilidadSimulador:
             print("📂 Cargando datos desde archivos...")
             # código actual con integracion_data desde paths
             self.df_materiales = integracion_data(
-                self.paths["minerales"], 
-                self.paths["blending"],
+                self.paths["mineral"], 
+                self.paths["blendings"],
                 self.paths["recuperacion"],
-                root_fecha,
+                self.paths["fecha_blending"],
                 minutos
             ).mill_to_lix(deltatime=45)
 
@@ -56,10 +59,10 @@ class TrazabilidadSimulador:
             ).simular_tanques()
 
             self.df_info_blendings = integracion_data(
-                self.paths["minerales"], 
-                self.paths["blending"],
+                self.paths["mineral"], 
+                self.paths["blendings"],
                 self.paths["recuperacion"],
-                root_fecha,
+                self.paths["fecha_blending"],
                 minutos
             ).info_blending(rec_estandar=0.90)
 
@@ -152,6 +155,23 @@ class TrazabilidadSimulador:
                 iter_data = [(None, fila)]
 
             df_au_carbon_tanques_anterior = None
+            df_mineros = pd.read_excel(self.paths["mineral"])[["nombre_del_minero", "ruc"]].drop_duplicates()
+            df_mineros = procesar_df_rucs(df_mineros)
+            df_mineros["ruc"] = df_mineros["ruc"].astype(str).str.strip().strip()
+            
+            PDF_URL = "https://intranet2.minem.gob.pe/ProyectoDGE/Mineria/registro%20especial%20de%20comercializadores%20y%20procesadores%20de%20oro.pdf"
+            LOCAL_PDF_PATH = "recpo.pdf"
+            descargar_pdf(PDF_URL, LOCAL_PDF_PATH)
+            dfs = read_pdf(LOCAL_PDF_PATH)
+            df_recpo = correccion_pdf(dfs)
+            df_merge1 = df_minero.merge(df_recpo, on="ruc", how="left", indicator=True)
+            df_merge1["alerta"] = df_merge1["_merge"].map({
+                "both": "RUC validado",
+                "left_only": "RUC no aparece en RECPO",
+            })
+            df_merge1 = df_merge1.drop(columns=["_merge"])
+            
+            df_merge2 = 
 
             for _, row in iter_data:
                 id_campana = row["id_campania"].replace("*", "_")
@@ -179,7 +199,9 @@ class TrazabilidadSimulador:
 
                 df_participacion = df_au_carbon_tanques.copy()
                 df_participacion["%participacion"] = (df_participacion["cm_au"] / df_participacion["cm_au"].sum()) * 100
-                df_participacion = df_participacion.groupby("nombre_del_minero")["%participacion"].sum().reset_index()
+                df_participacion = df_participacion.groupby(["nombre_del_minero","ruc"])["%participacion"].sum().reset_index()
+                df_participacion["ruc"] = df_participacion["ruc"].astype(str).str.strip().str.zfill(11)
+                df_participacion = pd.merge(df_participacion, df_mineros, on=["nombre_del_minero", "ruc"], how="left")
                 df_participacion = df_participacion.sort_values(by="%participacion", ascending=False)
 
                 df_trazabilidad = df_au_carbon_tanques.copy()
@@ -189,6 +211,7 @@ class TrazabilidadSimulador:
                 else:
                     df_trazabilidad["cm_au"] = 0 
                 df_trazabilidad = df_trazabilidad[["id_blending", "id_mineral", "cm_au"]].sort_values(by=['id_blending', 'cm_au'], ascending=[True, False])
+
 
                 df_participacion.to_excel(writer, sheet_name=f"{id_campana}_participacion", index=False)
                 df_trazabilidad.to_excel(writer, sheet_name=f"{id_campana}_trazabilidad", index=False)

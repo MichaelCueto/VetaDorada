@@ -3,8 +3,8 @@ import numpy as np
 from sqlalchemy import create_engine
 
 class integracion_data:
-    def __init__(self, minerales, blendings, recuperaciones, fechas_blending, minutos):
-        self.root_mineral = minerales
+    def __init__(self, mineral, blendings, recuperaciones, fechas_blending, minutos):
+        self.root_mineral = mineral
         self.root_blending = blendings
         self.root_recuperacion = recuperaciones
         self.root_fecha = fechas_blending

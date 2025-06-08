@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:ns1="http://service.sunat.gob.pe"
+    xmlns:ns0="http://service.gem.factura.comppago.registro.servicio.sunat.gob.pe/"
+    targetNamespace="http://service.gem.factura.comppago.registro.servicio.sunat.gob.pe/">
+
+  <wsdl:import location="billService_ns1.wsdl" namespace="http://service.sunat.gob.pe"/>
+
+  <wsdl:binding name="BillServicePortBinding" type="ns1:billService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sendBill">
+      <soap:operation soapAction="urn:sendBill"/>
+      <wsdl:input><soap:body use="literal"/></wsdl:input>
+      <wsdl:output><soap:body use="literal"/></wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:service name="billService">
+    <wsdl:port name="BillServicePort" binding="ns0:BillServicePortBinding">
+      <soap:address location="http://localhost:8000/mockSunat"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

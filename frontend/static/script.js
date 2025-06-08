@@ -30,7 +30,7 @@ function confirmarConexion() {
   const host = document.getElementById("db-host").value;
   const base = document.getElementById("db-name").value;
 
-  fetch("http://127.0.0.1:7000/api/configurar_conexion", {
+  fetch("/api/configurar_conexion", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -84,23 +84,26 @@ function obtenerTrazabilidad() {
     formData.append("ge", document.getElementById("ge").value);
     formData.append("tonelaje", document.getElementById("tonelaje").value);
 
-    fetch("/api/trazabilidad", {
+    fetch("/trazabilidad", {
       method: "POST",
       body: formData
     })
-      .then(res => res.json())
-      .then(data => {
-        const tabla = document.getElementById("tabla-trazabilidad");
-        tabla.innerHTML = "";
-        data.resultado.forEach(dato => {
-          const fila = document.createElement("tr");
-          fila.innerHTML = `<td>${dato.id}</td><td>${dato.auCmKg}</td><td>${dato.participacion}%</td>`;
-          tabla.appendChild(fila);
-        });
-        document.getElementById("modal-trazabilidad").style.display = "flex";
+      .then(response => {
+        if (!response.ok) throw new Error("Error al generar trazabilidad.");
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "trazabilidad_resultados.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
       })
       .catch(err => {
-        alert("Error al calcular trazabilidad desde archivo");
+        alert("❌ Error al calcular trazabilidad desde archivo");
         console.error(err);
       });
 
@@ -111,7 +114,7 @@ function obtenerTrazabilidad() {
       tonelaje: document.getElementById("tonelaje").value
     };
 
-    fetch("http://127.0.0.1:7000/trazabilidad_desde_mysql", {
+    fetch("/trazabilidad_desde_mysql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

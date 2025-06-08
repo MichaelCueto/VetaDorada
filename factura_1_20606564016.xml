@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Invoice>
+  <FechaEmision>2025-06-04</FechaEmision>
+  <RUCEmisor>20123456789</RUCEmisor>
+  <RazonSocialEmisor>TU EMPRESA SAC</RazonSocialEmisor>
+  <RUCReceptor>20606564016</RUCReceptor>
+  <NombreReceptor>MINERA QORISONCCO AT E.I.R.L</NombreReceptor>
+  <Moneda>PEN</Moneda>
+  <MetodoPago>Contado</MetodoPago>
+  <Items>
+    <Item>
+      <descripcion>Compra de mineral</descripcion>
+      <unidad_medida>TM</unidad_medida>
+      <cantidad>1.6</cantidad>
+      <valor_unitario>150</valor_unitario>
+      <precio_unitario>177</precio_unitario>
+      <subtotal>239.98</subtotal>
+      <igv>43.2</igv>
+      <total>283.17</total>
+    </Item>
+  </Items>
+</Invoice>
